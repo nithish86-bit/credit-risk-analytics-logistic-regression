@@ -193,7 +193,7 @@ credit-risk-analytics/
 ├── LICENSE
 └── .gitignore
 ```
-## 📊 Model Results
+## 📈 Model Results
 
 The final Logistic Regression model achieved the following results:
 
@@ -204,9 +204,9 @@ The final Logistic Regression model achieved the following results:
 
 - **Best Classification Cutoff:** 0.23
 - **High-Risk Customers Identified:** 64
-- **Low-Risk Customers Identified:** 86
+- **Lower-Risk Customers Identified:** 86
 
-The model demonstrated good discriminatory power on the test dataset, with a test ROC-AUC of 0.886.
+The model achieved a test ROC-AUC of 0.886, demonstrating good ability to distinguish between default and non-default customers.
 ```
 
 ## 👨‍💻 Author
