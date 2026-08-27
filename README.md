@@ -211,7 +211,7 @@ The model achieved a test ROC-AUC of 0.886, demonstrating good ability to distin
 
 ## 👨‍💻 Author
 
-**Nithish Ramesh**
+**[Nithish Ramesh](https://github.com/nithish86-bit)**
 
 **GitHub:** [nithish86-bit](https://github.com/nithish86-bit)
 
