@@ -2,7 +2,7 @@
 
 ## 📌 Project Overview
 
-This project uses Logistic Regression to predict the probability of loan default for bank customers.
+This project uses **Logistic Regression** to predict the probability of loan default for bank customers.
 
 The analysis follows an end-to-end data science workflow including data understanding, exploratory data analysis (EDA), data cleaning, correlation analysis, variable selection, multicollinearity analysis, model building, model evaluation, cutoff selection, decile analysis, and prediction of new customers.
 
@@ -16,52 +16,52 @@ The dataset contains information about bank customers and their financial and de
 
 The target variable is:
 
-- `default` – indicates whether the customer defaulted on the loan
+* `default` – indicates whether the customer defaulted on the loan
 
 The dataset includes variables related to customer financial information, credit history, employment, debt, and other customer characteristics.
 
 ## 🛠️ Technologies Used
 
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Seaborn
-- SciPy
-- Scikit-learn
-- Statsmodels
-- Patsy
+* Python
+* Pandas
+* NumPy
+* Matplotlib
+* Seaborn
+* SciPy
+* Scikit-learn
+* Statsmodels
+* Patsy
 
 ## 🔎 Analysis Workflow
 
 ### 1. Data Understanding & EDA
 
-- Inspected dataset structure and dimensions
-- Checked data types and missing values
-- Examined categorical and numerical variables
-- Calculated cardinality of the target variable
-- Analyzed the distribution of default and non-default customers
-- Performed descriptive analysis
-- Analyzed correlations between variables
+* Inspected dataset structure and dimensions
+* Checked data types and missing values
+* Examined numerical variables
+* Calculated cardinality of the target variable
+* Analyzed the distribution of default and non-default customers
+* Performed descriptive analysis
+* Analyzed correlations between variables
 
 ### 2. Data Cleaning
 
-- Treated extreme values using percentile-based clipping
-- Examined missing values
-- Prepared the dataset for model development
+* Treated extreme values using percentile-based clipping
+* Examined missing values
+* Prepared the dataset for model development
 
 ### 3. Train-Test Split
 
 The existing customer dataset was divided into:
 
-- 70% Training Data
-- 30% Testing Data
+* 70% Training Data
+* 30% Testing Data
 
 A random state was used to make the split reproducible.
 
 ### 4. Logistic Regression Model
 
-A Logistic Regression model was developed using Statsmodels.
+A Logistic Regression model was developed using **Statsmodels**.
 
 The initial model was built using all available predictor variables.
 
@@ -93,12 +93,12 @@ The final model was used to calculate the probability of default for both traini
 
 Model performance was evaluated using:
 
-- ROC-AUC
-- Accuracy
-- Confusion Matrix
-- Classification Report
-- Sensitivity
-- Specificity
+* ROC-AUC
+* Accuracy
+* Confusion Matrix
+* Classification Report
+* Sensitivity
+* Specificity
 
 The model was evaluated on both training and testing datasets.
 
@@ -108,13 +108,15 @@ Different probability cutoff values between 0 and 1 were evaluated.
 
 The cutoff was selected based on the highest combined:
 
-- Sensitivity
-- Specificity
+* Sensitivity
+* Specificity
 
-This cutoff was then used to classify customers as:
+The selected cutoff was **0.23**.
 
-- `1` → Default / High Risk
-- `0` → Non-default / Lower Risk
+Customers were classified as:
+
+* `1` → Default / High Risk
+* `0` → Non-default / Lower Risk
 
 ### 10. Decile Analysis
 
@@ -124,38 +126,51 @@ Decile analysis was used to understand how default risk is distributed across cu
 
 The decile results were exported into:
 
-- `train_deciles.csv`
-- `test_deciles.csv`
+* `train_deciles.csv`
+* `test_deciles.csv`
 
 ### 11. New Customer Prediction
 
-The final Logistic Regression model was also applied to new customers whose default status was not available.
+The final Logistic Regression model was applied to new customers whose default status was not available.
 
 The model calculates the probability of default and classifies customers based on the selected cutoff.
 
-This can support proactive identification of high-risk loan applicants.
+In this analysis:
+
+* **64 customers** were identified as high risk
+* **86 customers** were identified as lower risk
 
 ## 📈 Final Model Features
 
-The final model uses selected customer financial and demographic variables identified through variable selection and multicollinearity analysis.
+The final Logistic Regression model uses the following variables:
 
-The final model includes variables such as:
+* `address`
+* `creddebt`
+* `debtinc`
+* `employ`
 
-- Address
-- Credit Debt
-- Debt-to-Income Ratio
-- Employment
+These variables were selected through the variable selection and model refinement process.
 
-## 📊 Model Evaluation Metrics
+## 📊 Model Results
 
-| Metric | Description |
-|---|---|
-| ROC-AUC | Measures the model's ability to distinguish between defaulters and non-defaulters |
-| Accuracy | Measures the percentage of correctly classified customers |
-| Sensitivity | Measures the proportion of actual defaulters correctly identified |
-| Specificity | Measures the proportion of non-defaulters correctly identified |
-| Confusion Matrix | Shows correct and incorrect classifications |
-| Classification Report | Provides precision, recall, F1-score, and support |
+| Metric   |  Train |   Test |
+| -------- | -----: | -----: |
+| ROC-AUC  |  0.837 |  0.886 |
+| Accuracy | 72.86% | 74.76% |
+
+### Classification Cutoff
+
+**Best Cutoff: 0.23**
+
+### Test Classification Performance
+
+At the selected cutoff of 0.23:
+
+* Default Recall / Sensitivity: **84%**
+* Non-default Recall / Specificity: **72%**
+* Overall Accuracy: **74.76%**
+
+The test ROC-AUC of **0.886** indicates that the model has good ability to distinguish between default and non-default customers.
 
 ## 💼 Business Interpretation
 
@@ -171,18 +186,18 @@ The model can therefore support risk-based loan approval and proactive credit ri
 
 The model may have limitations due to:
 
-- Limited dataset size
-- Possible multicollinearity
-- Model assumptions
-- Potential overfitting
-- Limited number of predictive variables
-- Changes in customer behavior over time
-- Model performance depending on the selected cutoff
+* Limited dataset size
+* Possible multicollinearity
+* Model assumptions
+* Potential overfitting
+* Limited number of predictive variables
+* Changes in customer behavior over time
+* Model performance depending on the selected cutoff
 
 ## 📁 Repository Structure
 
 ```text
-credit-risk-analytics/
+credit-risk-analytics-logistic-regression/
 │
 ├── bankloans.csv
 ├── credit_risk_analytics.py
@@ -193,26 +208,39 @@ credit-risk-analytics/
 ├── LICENSE
 └── .gitignore
 ```
-## 📈 Model Results
 
-The final Logistic Regression model achieved the following results:
+## ▶️ How to Run
 
-| Metric | Train | Test |
-|---|---:|---:|
-| ROC-AUC | 0.837 | 0.886 |
-| Accuracy | 72.86% | 74.76% |
+### 1. Clone the repository
 
-- **Best Classification Cutoff:** 0.23
-- **High-Risk Customers Identified:** 64
-- **Lower-Risk Customers Identified:** 86
-
-The model achieved a test ROC-AUC of 0.886, demonstrating good ability to distinguish between default and non-default customers.
+```bash
+git clone https://github.com/nithish86-bit/credit-risk-analytics-logistic-regression.git
 ```
+
+### 2. Navigate to the project folder
+
+```bash
+cd credit-risk-analytics-logistic-regression
+```
+
+### 3. Install required libraries
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Python script
+
+```bash
+python credit_risk_analytics.py
+```
+
+The script performs the complete analysis including data preparation, model development, evaluation, decile analysis, and prediction of new customers.
 
 ## 👨‍💻 Author
 
-**[Nithish Ramesh](https://github.com/nithish86-bit)**
+**Nithish Ramesh**
 
-**GitHub:** [nithish86-bit](https://github.com/nithish86-bit)
+GitHub: [nithish86-bit](https://github.com/nithish86-bit)
 
-**LinkedIn:** [Nithish Ramesh](https://www.linkedin.com/in/nithish-rbn)
+LinkedIn: [Nithish Ramesh](https://www.linkedin.com/in/nithish-rbn)
