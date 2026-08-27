@@ -1,3 +1,11 @@
+# ============================================================
+# CREDIT RISK ANALYTICS - LOGISTIC REGRESSION
+# ============================================================
+
+# ------------------------------------------------------------
+# 1. IMPORT LIBRARIES
+# ------------------------------------------------------------
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -17,22 +25,18 @@ from sklearn.metrics import (
 )
 
 
-# ============================================================
-# CREDIT RISK ANALYTICS - LOGISTIC REGRESSION
-# ============================================================
-
-
 # ------------------------------------------------------------
-# 1. DATA IMPORT
+# 2. DATA IMPORT
 # ------------------------------------------------------------
 
 bankloans = pd.read_csv("bankloans.csv")
 
+print("\nFirst 5 rows:")
 print(bankloans.head())
 
 
 # ------------------------------------------------------------
-# 2. USER DEFINED FUNCTIONS
+# 3. USER DEFINED FUNCTIONS
 # ------------------------------------------------------------
 
 def continuous_var_summary(x):
@@ -143,31 +147,27 @@ def missing_imputation(x, stats="mean"):
 
 
 # ------------------------------------------------------------
-# 3. DATA UNDERSTANDING
+# 4. DATA UNDERSTANDING
 # ------------------------------------------------------------
 
+print("\nDataset Information:")
 bankloans.info()
 
-print("Number of default observations:",
-      bankloans.default.count())
+print("\nNumber of non-missing default values:")
+print(bankloans.default.count())
 
-print(
-    "Default cardinality:",
-    bankloans.default.nunique()
-)
+print("\nDefault Cardinality:")
+print(bankloans.default.nunique())
 
-print(
-    "Default class distribution:"
-)
+print("\nDefault Class Distribution:")
+print(bankloans.default.value_counts())
 
-print(
-    bankloans.default.value_counts()
-    / bankloans.default.count()
-)
+print("\nDefault Class Percentage:")
+print(bankloans.default.value_counts() / bankloans.default.count())
 
 
 # ------------------------------------------------------------
-# 4. SEPARATE EXISTING AND NEW CUSTOMERS
+# 5. SEPARATE EXISTING AND NEW CUSTOMERS
 # ------------------------------------------------------------
 
 bankloans_existing = bankloans.loc[
@@ -178,21 +178,18 @@ bankloans_new = bankloans.loc[
     bankloans.default.isna()
 ]
 
-print(
-    "Existing customers shape:",
-    bankloans_existing.shape
-)
+print("\nExisting Customer Shape:")
+print(bankloans_existing.shape)
 
-print(
-    "New customers shape:",
-    bankloans_new.shape
-)
+print("\nNew Customer Shape:")
+print(bankloans_new.shape)
 
 
 # ------------------------------------------------------------
-# 5. EDA
+# 6. EXPLORATORY DATA ANALYSIS
 # ------------------------------------------------------------
 
+print("\nContinuous Variable Summary:")
 print(
     bankloans_existing.apply(
         continuous_var_summary
@@ -201,10 +198,8 @@ print(
 
 
 # ------------------------------------------------------------
-# 6. DATA CLEANING
+# 7. OUTLIER TREATMENT
 # ------------------------------------------------------------
-
-# Outlier treatment
 
 bankloans_existing = bankloans_existing.apply(
     lambda x: x.clip(
@@ -215,11 +210,12 @@ bankloans_existing = bankloans_existing.apply(
 
 
 # ------------------------------------------------------------
-# 7. CORRELATION ANALYSIS
+# 8. CORRELATION ANALYSIS
 # ------------------------------------------------------------
 
 corr_matrix = bankloans_existing.corr()
 
+print("\nCorrelation Matrix:")
 print(corr_matrix)
 
 plt.figure(figsize=(15, 9))
@@ -230,29 +226,28 @@ sns.heatmap(
 )
 
 plt.title("Correlation Matrix")
-
 plt.show()
 
 
 # ------------------------------------------------------------
-# 8. TRAIN / TEST SPLIT
+# 9. TRAIN AND TEST SPLIT
 # ------------------------------------------------------------
 
 train, test = train_test_split(
     bankloans_existing,
-    test_size=0.3,
+    test_size=0.30,
     random_state=42
 )
 
-print("Train shape:", train.shape)
-print("Test shape:", test.shape)
+print("\nTraining Data Shape:")
+print(train.shape)
 
-print("Train columns:")
-print(train.columns)
+print("\nTesting Data Shape:")
+print(test.shape)
 
 
 # ------------------------------------------------------------
-# 9. MODEL 1 - ALL FEATURES
+# 10. MODEL 1 - ALL FEATURES
 # ------------------------------------------------------------
 
 model_eq = (
@@ -262,6 +257,7 @@ model_eq = (
     )
 )
 
+print("\nModel 1 Equation:")
 print(model_eq)
 
 m1 = smf.logit(
@@ -269,11 +265,12 @@ m1 = smf.logit(
     data=train
 ).fit()
 
+print("\nModel 1 Summary:")
 print(m1.summary2())
 
 
 # ------------------------------------------------------------
-# 10. SOMERS' D - VARIABLE REDUCTION
+# 11. SOMER'S D VARIABLE SELECTION
 # ------------------------------------------------------------
 
 somarsd_score = pd.DataFrame()
@@ -314,34 +311,33 @@ for var_name in bankloans_existing.columns.difference(
         axis=0
     )
 
-
 somarsd_score.columns = [
     "variable",
     "roc_auc_score",
     "somars_d"
 ]
 
-print("Somers' D results:")
-
+print("\nSomer's D Scores:")
 print(somarsd_score)
 
 
-# Keep variables with Somers' D >= 0.2
+# ------------------------------------------------------------
+# 12. SELECT VARIABLES USING SOMER'S D
+# ------------------------------------------------------------
 
 features = list(
     somarsd_score.loc[
-        somarsd_score.somars_d >= 0.2,
+        somarsd_score.somars_d >= 0.20,
         "variable"
     ]
 )
 
-print("Selected features:")
-
+print("\nSelected Features:")
 print(features)
 
 
 # ------------------------------------------------------------
-# 11. MULTICOLLINEARITY CHECK - VIF
+# 13. VIF - MULTICOLLINEARITY CHECK
 # ------------------------------------------------------------
 
 equation = (
@@ -367,13 +363,12 @@ vif["VIF Factor"] = [
     for i in range(b.shape[1])
 ]
 
-print("VIF results:")
-
+print("\nVIF Analysis:")
 print(vif)
 
 
 # ------------------------------------------------------------
-# 12. MODEL 2 - AFTER VARIABLE REDUCTION
+# 14. MODEL 2 - AFTER VARIABLE SELECTION
 # ------------------------------------------------------------
 
 model_eq = (
@@ -386,11 +381,12 @@ m2 = smf.logit(
     data=train
 ).fit()
 
+print("\nModel 2 Summary:")
 print(m2.summary2())
 
 
 # ------------------------------------------------------------
-# 13. MODEL 3 - FINAL MODEL
+# 15. MODEL 3 - FINAL MODEL
 # ------------------------------------------------------------
 
 features = [
@@ -410,28 +406,27 @@ m3 = smf.logit(
     data=train
 ).fit()
 
+print("\nFinal Model Summary:")
 print(m3.summary2())
 
 
 # ------------------------------------------------------------
-# 14. PREDICT PROBABILITIES
+# 16. PREDICT PROBABILITIES
 # ------------------------------------------------------------
 
 train_predict = m3.predict(train)
 
 test_predict = m3.predict(test)
 
-print("Train predicted probabilities:")
-
+print("\nTraining Predictions:")
 print(train_predict.head())
 
-print("Test predicted probabilities:")
-
+print("\nTesting Predictions:")
 print(test_predict.head())
 
 
 # ------------------------------------------------------------
-# 15. MODEL SCORING - AUC
+# 17. MODEL SCORING - ROC AUC
 # ------------------------------------------------------------
 
 train_auc = roc_auc_score(
@@ -444,6 +439,7 @@ test_auc = roc_auc_score(
     test_predict
 )
 
+print("\nROC-AUC Results:")
 print(
     "AUC for Train Data =",
     train_auc
@@ -456,7 +452,7 @@ print(
 
 
 # ------------------------------------------------------------
-# 16. ACTUAL VS PREDICTED PROBABILITY
+# 18. COMBINE ACTUAL VALUES WITH PREDICTED PROBABILITIES
 # ------------------------------------------------------------
 
 train_predicted_prob = pd.DataFrame(
@@ -496,7 +492,7 @@ test_pf.columns = [
 
 
 # ------------------------------------------------------------
-# 17. FIND BEST CUTOFF
+# 19. FIND BEST CUTOFF
 # ------------------------------------------------------------
 
 df_best_cutoff = pd.DataFrame()
@@ -534,13 +530,13 @@ for iproba in np.arange(
     specificity = 1 - fpr
 
     accuracy = (
-        (tp + tn)
-        / cm.sum()
+        (tp + tn) /
+        cm.sum()
     )
 
     sen_spec = (
-        tpr
-        + specificity
+        tpr +
+        specificity
     )
 
     temp_df = pd.DataFrame(
@@ -566,7 +562,6 @@ for iproba in np.arange(
         axis=0
     )
 
-
 df_best_cutoff.columns = [
     "proba",
     "tp",
@@ -586,52 +581,35 @@ df_best_cutoff = (
 )
 
 
-print("Best cutoff analysis:")
-
-print(df_best_cutoff)
-
-
-# ------------------------------------------------------------
-# 18. SELECT BEST CUTOFF
-# ------------------------------------------------------------
-
 best_cutoff = df_best_cutoff.loc[
-    df_best_cutoff.sen_spec
-    == df_best_cutoff.sen_spec.max(),
+    df_best_cutoff.sen_spec ==
+    df_best_cutoff.sen_spec.max(),
     "proba"
-]
+].iloc[0]
 
-best_cutoff = best_cutoff.iloc[0]
+print("\nBest Cutoff:")
+print(best_cutoff)
 
-print(
-    "Best cutoff =",
-    best_cutoff
+
+# ------------------------------------------------------------
+# 20. FINAL PREDICTIONS USING BEST CUTOFF
+# ------------------------------------------------------------
+
+train_pf["predicted"] = np.where(
+    train_pf.prob >= best_cutoff,
+    1,
+    0
+)
+
+test_pf["predicted"] = np.where(
+    test_pf.prob >= best_cutoff,
+    1,
+    0
 )
 
 
 # ------------------------------------------------------------
-# 19. FINAL CLASSIFICATION
-# ------------------------------------------------------------
-
-train_pf["predicted"] = pd.Series(
-    np.where(
-        train_pf.prob >= best_cutoff,
-        1,
-        0
-    )
-)
-
-test_pf["predicted"] = pd.Series(
-    np.where(
-        test_pf.prob >= best_cutoff,
-        1,
-        0
-    )
-)
-
-
-# ------------------------------------------------------------
-# 20. ACCURACY
+# 21. ACCURACY
 # ------------------------------------------------------------
 
 train_accuracy = accuracy_score(
@@ -644,22 +622,24 @@ test_accuracy = accuracy_score(
     test_pf.predicted
 )
 
+print("\nAccuracy Results:")
+
 print(
-    "Overall accuracy for Train Data =",
+    "Accuracy for Train Data =",
     train_accuracy
 )
 
 print(
-    "Overall accuracy for Test Data =",
+    "Accuracy for Test Data =",
     test_accuracy
 )
 
 
 # ------------------------------------------------------------
-# 21. CONFUSION MATRIX - TRAIN
+# 22. CONFUSION MATRIX - TRAIN
 # ------------------------------------------------------------
 
-print("Train Confusion Matrix:")
+print("\nTrain Confusion Matrix:")
 
 print(
     confusion_matrix(
@@ -669,7 +649,7 @@ print(
 )
 
 
-print("Train Classification Report:")
+print("\nTrain Classification Report:")
 
 print(
     classification_report(
@@ -680,34 +660,10 @@ print(
 
 
 # ------------------------------------------------------------
-# 22. DEFAULT 0.5 CUTOFF COMPARISON
-# ------------------------------------------------------------
-
-y_pred = pd.Series(
-    np.where(
-        train_pf.prob >= 0.5,
-        1,
-        0
-    )
-)
-
-print(
-    "Classification Report at 0.5 cutoff:"
-)
-
-print(
-    classification_report(
-        train_pf.actual,
-        y_pred
-    )
-)
-
-
-# ------------------------------------------------------------
 # 23. CONFUSION MATRIX - TEST
 # ------------------------------------------------------------
 
-print("Test Confusion Matrix:")
+print("\nTest Confusion Matrix:")
 
 print(
     confusion_matrix(
@@ -717,7 +673,7 @@ print(
 )
 
 
-print("Test Classification Report:")
+print("\nTest Classification Report:")
 
 print(
     classification_report(
@@ -746,9 +702,8 @@ test_pf["Deciles"] = pd.qcut(
 
 train_deciles = (
     train_pf
-    .groupby("Deciles")[
-        ["prob", "actual"]
-    ]
+    .groupby("Deciles")
+    [["prob", "actual"]]
     .agg(
         {
             "prob": [np.min, np.max],
@@ -765,9 +720,8 @@ train_deciles = (
 
 test_deciles = (
     test_pf
-    .groupby("Deciles")[
-        ["prob", "actual"]
-    ]
+    .groupby("Deciles")
+    [["prob", "actual"]]
     .agg(
         {
             "prob": [np.min, np.max],
@@ -779,16 +733,12 @@ test_deciles = (
         by="Deciles",
         ascending=False
     )
-)
 
 
-print("Train Decile Analysis:")
-
+print("\nTrain Decile Analysis:")
 print(train_deciles)
 
-
-print("Test Decile Analysis:")
-
+print("\nTest Decile Analysis:")
 print(test_deciles)
 
 
@@ -806,54 +756,62 @@ test_deciles.to_csv(
     index=False
 )
 
+print("\nDecile files created successfully.")
+
 
 # ------------------------------------------------------------
 # 26. PREDICT NEW CUSTOMERS
 # ------------------------------------------------------------
 
-print("New customers:")
+print("\nNew Customers:")
 
-print(bankloans_new.head())
+print(
+    bankloans_new.head()
+)
 
 
+# Predict probability of default
 bankloans_new.loc[:, "prob"] = (
     m3.predict(bankloans_new)
 )
 
 
-bankloans_new.loc[:, "default"] = (
+# Classify using best cutoff
+bankloans_new.loc[:, "predicted_default"] = (
     bankloans_new["prob"]
     .apply(
         lambda x:
-        1 if x > best_cutoff else 0
+        1 if x >= best_cutoff else 0
     )
 )
 
 
+print("\nNew Customer Predictions:")
+
 print(
-    "New customer default prediction:"
+    bankloans_new[
+        [
+            "prob",
+            "predicted_default"
+        ]
+    ].head()
 )
 
-print(
-    bankloans_new.default.value_counts()
-)
 
+print("\nNew Customer Risk Distribution:")
 
 print(
-    "New customers sorted by risk:"
-)
-
-print(
-    bankloans_new.sort_values(
-        "prob",
-        ascending=False
-    )
+    bankloans_new[
+        "predicted_default"
+    ].value_counts()
 )
 
 
 # ------------------------------------------------------------
-# 27. PROBABILITY DISTRIBUTION
+# 27. PREDICTED PROBABILITY DISTRIBUTION
 # ------------------------------------------------------------
+
+plt.figure(figsize=(10, 6))
 
 sns.histplot(
     train_pf.loc[
@@ -861,7 +819,7 @@ sns.histplot(
         "prob"
     ],
     kde=True,
-    label="Non-default"
+    label="Non-Default"
 )
 
 sns.histplot(
@@ -873,19 +831,47 @@ sns.histplot(
     label="Default"
 )
 
+plt.xlabel("Predicted Probability")
+plt.ylabel("Frequency")
 plt.title(
     "Predicted Probability Distribution"
 )
 
-plt.xlabel(
-    "Probability of Default"
-)
-
 plt.legend()
-
 plt.show()
 
 
 # ------------------------------------------------------------
-# END OF CREDIT RISK ANALYTICS
+# 28. FINAL SUMMARY
 # ------------------------------------------------------------
+
+print("\n============================================================")
+print("CREDIT RISK ANALYTICS - FINAL RESULTS")
+print("============================================================")
+
+print(
+    "Train ROC-AUC :",
+    train_auc
+)
+
+print(
+    "Test ROC-AUC  :",
+    test_auc
+)
+
+print(
+    "Best Cutoff   :",
+    best_cutoff
+)
+
+print(
+    "Train Accuracy:",
+    train_accuracy
+)
+
+print(
+    "Test Accuracy :",
+    test_accuracy
+)
+
+print("============================================================")
